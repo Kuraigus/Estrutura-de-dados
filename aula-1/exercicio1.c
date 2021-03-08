@@ -64,13 +64,11 @@ int main()
     for (i = 0; i < quantidade; i++)
     {
         if (dados[i].nome[0] == 'm' || dados[i].nome[0] == 'M')
-        {
             printf("%s\n", dados[i].nome);
-        }
         media_peso += dados[i].peso;
-        if (dados[i].altura > mais_alto)
+        if (dados[i].altura > dados[mais_alto].altura)
             mais_alto = i;
-        if (dados[i].idade > mais_velho)
+        if (dados[i].idade > dados[mais_velho].idade)
             mais_velho = i;
         if (dados[i].altura > 30)
             quantidade_maiores_que_30++;
