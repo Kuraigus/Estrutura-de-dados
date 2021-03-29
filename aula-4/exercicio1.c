@@ -44,19 +44,25 @@ registro *aloca_registro()
 
 void incluir_inicio(lista *l, int x)
 {
+    if (l == NULL)
+    {
+        printf("\n lista nao alocada");
+        return;
+    }
+
     registro *novo;
     novo = aloca_registro();
     novo->valor = x;
 
-    if (l->qtd == 0)
+    if (l->inicio == NULL && l->fim == NULL)
     {
         l->inicio = novo;
         l->fim = novo;
     }
     else
     {
-        l->inicio->ant = novo;
         novo->prox = l->inicio;
+        l->inicio->ant = novo;
         l->inicio = novo;
     }
     l->qtd++;
@@ -64,22 +70,26 @@ void incluir_inicio(lista *l, int x)
 
 void incluir_fim(lista *l, int x)
 {
-    registro *novo, *aux;
+    if (l == NULL)
+    {
+        printf("\n lista nao alocada");
+        return;
+    }
+
+    registro *novo;
     novo = aloca_registro();
     novo->valor = x;
 
-    if (l->inicio == NULL)
+    if (l->inicio == NULL && l->fim == NULL)
     {
         l->inicio = novo;
         l->fim = novo;
     }
     else
     {
-        aux = l->fim;
-        while (aux->prox != NULL)
-            aux = aux->prox;
-        aux->prox = novo;
-        l->fim = aux->prox;
+        l->fim->prox = novo;
+        novo->ant = l->fim;
+        l->fim = novo;
     }
     l->qtd++;
 };
@@ -110,12 +120,9 @@ void remover(lista *l, int x)
 
     registro *aux = NULL;
 
-    printf("\n\nENTROU NA FUNCAO DE REMOVER\n\n");
-
     aux = l->inicio;
     while (aux != NULL)
     {
-        printf("%d ", aux->valor);
         if (aux->valor == x)
         {
             if (aux->ant == NULL)
@@ -125,9 +132,10 @@ void remover(lista *l, int x)
             else
             {
                 aux->ant->prox = aux->prox;
+                aux->prox->ant = aux->ant;
             }
             l->qtd--;
-            printf("\n\nREMOVEU O %d\n\n", aux->valor);
+
             free(aux);
             return;
         };
@@ -142,9 +150,10 @@ int checa_primo(int x)
     if (x == 0)
         return 0;
 
-    for (i = 2; i <= x / 2; i++)
+    printf("\nx=%d\n", x);
+    for (i = 1; i <= x / 2; i++)
     {
-        if (x % i == 0)
+        if (x % i == 0 && i != 1)
             return 0;
     };
     return 1;
@@ -157,15 +166,11 @@ void procurar_remover_primos(lista *l)
 
     registro *aux = l->inicio;
 
-    printf("\n\nFUNCAO DE PROCURAR PRIMOS\n\n");
-
     while (aux != NULL)
     {
-        printf("%d ", aux->valor);
         if (checa_primo(aux->valor))
         {
             remover(l, aux->valor);
-            mostrar(l);
             if (aux->ant == NULL)
             {
                 aux = l->inicio->prox;
@@ -178,8 +183,32 @@ void procurar_remover_primos(lista *l)
         else
             aux = aux->prox;
     }
+};
 
-    printf("\n\nFIM DA FUNCAO DE PROCURAR PRIMOS\n\n");
+void procurar_remover_iguais(lista *l)
+{
+    if (l->inicio == NULL)
+        return;
+
+    registro *aux = l->inicio;
+
+    while (aux != NULL)
+    {
+        if (checa_primo(aux->valor))
+        {
+            remover(l, aux->valor);
+            if (aux->ant == NULL)
+            {
+                aux = l->inicio->prox;
+            }
+            else
+            {
+                aux = aux->ant->prox;
+            }
+        }
+        else
+            aux = aux->prox;
+    }
 };
 
 int main()
@@ -188,16 +217,18 @@ int main()
 
     l = aloca_lista();
 
-    incluir_fim(l, 7);
-    incluir_fim(l, 10);
-    incluir_fim(l, 11);
-    incluir_fim(l, 17);
-    incluir_fim(l, 30);
-    incluir_fim(l, 45);
+    incluir_fim(l, 1);
+    incluir_fim(l, 3);
+    incluir_fim(l, 4);
+    incluir_fim(l, 2);
+    incluir_fim(l, 5);
+    incluir_fim(l, 6);
 
     mostrar(l);
 
     procurar_remover_primos(l);
+
+    printf("\n");
 
     mostrar(l);
 
